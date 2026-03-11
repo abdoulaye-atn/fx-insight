@@ -2,16 +2,15 @@ from pathlib import Path
 import pandas as pd
 
 
-RAW_DIR = Path("data/raw")
-PROCESSED_DIR = Path("data/processed")
+BRONZE_DIR = Path("data/bronze")
+SILVER_DIR = Path("data/silver")
 
-PROCESSED_DIR.mkdir(parents=True, exist_ok=True)
+SILVER_DIR.mkdir(parents=True, exist_ok=True)
 
 
 def normalize_transactions():
-
-    transactions_path = RAW_DIR / "transactions.csv"
-    fx_rates_path = RAW_DIR / "fx_rates.csv"
+    transactions_path = BRONZE_DIR / "transactions.csv"
+    fx_rates_path = BRONZE_DIR / "fx_rates.csv"
 
     transactions = pd.read_csv(transactions_path)
     fx_rates = pd.read_csv(fx_rates_path)
@@ -25,11 +24,17 @@ def normalize_transactions():
 
     merged["amount_cad"] = merged["amount"] * merged["rate_to_cad"]
 
-    output_path = PROCESSED_DIR / "normalized_transactions.csv"
+    merged["dt"] = merged["transaction_date"]
 
-    merged.to_csv(output_path, index=False)
+    for dt_value, partition_df in merged.groupby("dt"):
+        partition_dir = SILVER_DIR / f"dt={dt_value}"
+        partition_dir.mkdir(parents=True, exist_ok=True)
 
-    print(f"Normalized transactions saved to {output_path}")
+        output_path = partition_dir / "normalized_transactions.parquet"
+        partition_df.to_parquet(output_path, index=False)
+
+        print(f"Saved silver partition: {output_path}")
+
 
 if __name__ == "__main__":
     normalize_transactions()
