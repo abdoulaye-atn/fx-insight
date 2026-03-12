@@ -7,9 +7,8 @@ from pathlib import Path
 import pandas as pd
 
 
-RAW_DIR = Path("data/raw")
-RAW_DIR.mkdir(parents=True, exist_ok=True)
-
+BRONZE_DIR = Path("data/bronze")
+BRONZE_DIR.mkdir(parents=True, exist_ok=True)
 
 def generate_transactions(num_rows: int = 200) -> pd.DataFrame:
     """Generate sample multi-currency financial transactions."""
@@ -71,8 +70,8 @@ def main() -> None:
     transactions_df = generate_transactions(num_rows=200)
     fx_rates_df = generate_fx_rates()
 
-    transactions_output = RAW_DIR / "transactions.csv"
-    fx_rates_output = RAW_DIR / "fx_rates.csv"
+    transactions_output = BRONZE_DIR / "transactions.csv"
+    fx_rates_output = BRONZE_DIR / "fx_rates.csv"
 
     transactions_df.to_csv(transactions_output, index=False)
     fx_rates_df.to_csv(fx_rates_output, index=False)
