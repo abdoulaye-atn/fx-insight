@@ -1,16 +1,19 @@
 from __future__ import annotations
 
 import random
+import pandas as pd
 from datetime import datetime, timedelta
 from pathlib import Path
+from src.utils.config_loader import load_config
 
-import pandas as pd
+config = load_config()
 
-
-BRONZE_DIR = Path("data/bronze")
+BRONZE_DIR = Path(config["paths"]["bronze"])
 BRONZE_DIR.mkdir(parents=True, exist_ok=True)
 
-def generate_transactions(num_rows: int = 200) -> pd.DataFrame:
+SAMPLE_TRANSACTION_COUNT = config["pipeline"]["sample_transaction_count"]
+
+def generate_transactions(num_rows: int = SAMPLE_TRANSACTION_COUNT) -> pd.DataFrame:
     """Generate sample multi-currency financial transactions."""
     currencies = ["CAD", "USD", "EUR", "GBP"]
     transaction_types = ["purchase", "refund", "salary", "loan_payment", "subscription"]
@@ -67,7 +70,7 @@ def generate_fx_rates() -> pd.DataFrame:
 
 
 def main() -> None:
-    transactions_df = generate_transactions(num_rows=200)
+    transactions_df = generate_transactions(num_rows=SAMPLE_TRANSACTION_COUNT)
     fx_rates_df = generate_fx_rates()
 
     transactions_output = BRONZE_DIR / "transactions.csv"

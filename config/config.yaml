@@ -1,0 +1,13 @@
+paths:
+  bronze: data/bronze
+  silver: data/silver
+  gold: data/gold
+  quarantine: data/quarantine
+
+pipeline:
+  base_currency: CAD
+  sample_transaction_count: 200
+
+fx_api:
+  url: https://api.exchangerate.host/latest
+  timeout_seconds: 30
