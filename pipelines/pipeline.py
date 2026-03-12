@@ -1,22 +1,24 @@
 from src.ingestion.generate_sample_data import main as generate_sample_data
 from src.processing.normalize_transactions import normalize_transactions
 from src.quality.data_checks import run_data_checks
+from src.utils.logger import get_logger
 
+logger = get_logger(__name__)
 
 def run_pipeline():
-    print("Starting pipeline...")
 
-    print("\nStep 1: Generating sample data...")
+    logger.info("Starting pipeline")
+
+    logger.info("Step 1: Generating sample data")
     generate_sample_data()
 
-    print("\nStep 2: Normalizing transactions...")
+    logger.info("Step 2: Normalizing transactions")
     normalize_transactions()
 
-    print("\nStep 3: Running data quality checks...")
+    logger.info("Step 3: Running data quality checks")
     run_data_checks()
 
-    print("\nPipeline completed successfully.")
-
+    logger.info("Pipeline completed successfully")
 
 if __name__ == "__main__":
     run_pipeline()
