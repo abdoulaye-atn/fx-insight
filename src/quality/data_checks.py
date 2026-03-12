@@ -1,10 +1,12 @@
 from pathlib import Path
 import pandas as pd
+from src.utils.config_loader import load_config
 
+config = load_config()
 
-SILVER_DIR = Path("data/silver")
-GOLD_DIR = Path("data/gold")
-QUARANTINE_DIR = Path("data/quarantine")
+SILVER_DIR = Path(config["paths"]["silver"])
+GOLD_DIR = Path(config["paths"]["gold"])
+QUARANTINE_DIR = Path(config["paths"]["quarantine"])
 
 GOLD_DIR.mkdir(parents=True, exist_ok=True)
 QUARANTINE_DIR.mkdir(parents=True, exist_ok=True)

@@ -1,9 +1,12 @@
 from pathlib import Path
 import pandas as pd
+from src.utils.config_loader import load_config
 
+config = load_config()
 
-BRONZE_DIR = Path("data/bronze")
-SILVER_DIR = Path("data/silver")
+BRONZE_DIR = Path(config["paths"]["bronze"])
+SILVER_DIR = Path(config["paths"]["silver"])
+
 
 SILVER_DIR.mkdir(parents=True, exist_ok=True)
 
