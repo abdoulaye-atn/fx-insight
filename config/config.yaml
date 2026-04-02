@@ -17,3 +17,14 @@ fx_api:
     - USD
     - EUR
     - GBP
+
+storage:
+  type: s3   
+
+s3:
+  bucket: fx-insight
+  bronze_prefix: bronze
+  silver_prefix: silver
+  gold_prefix: gold
+  quarantine_prefix: quarantine
+

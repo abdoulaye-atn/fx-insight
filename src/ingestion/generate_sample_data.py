@@ -7,7 +7,7 @@ from pathlib import Path
 from src.ingestion.fx_api_client import fetch_fx_rates_from_api
 from src.utils.config_loader import load_config
 from src.utils.logger import get_logger
-
+from src.utils.s3_client import upload_file_to_s3
 
 logger = get_logger(__name__)
 config = load_config()
@@ -60,6 +60,19 @@ def main() -> None:
     logger.info("Generated %s transactions -> %s", len(transactions_df), transactions_output)
     logger.info("Saved %s FX rows -> %s", len(fx_rates_df), fx_rates_output)
 
+    storage_type = config["storage"]["type"]
+
+    if storage_type == "s3":
+        bronze_prefix = config["s3"]["bronze_prefix"]
+
+        upload_file_to_s3(
+            transactions_output,
+            f"{bronze_prefix}/transactions.csv"
+        )
+        upload_file_to_s3(
+            fx_rates_output,
+            f"{bronze_prefix}/fx_rates.csv"
+        )
 
 if __name__ == "__main__":
     main()
