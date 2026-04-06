@@ -20,7 +20,7 @@ fx_api:
     - GBP
 
 storage:
-  type: s3   
+  type: local   
 
 s3:
   bucket: fx-insight
