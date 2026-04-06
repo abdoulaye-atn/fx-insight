@@ -6,7 +6,8 @@ paths:
 
 pipeline:
   base_currency: CAD
-  sample_transaction_count: 200
+  sample_transaction_count: 1000
+  sample_customer_count: 20
 
 fx_api:
   base_url: https://api.frankfurter.app

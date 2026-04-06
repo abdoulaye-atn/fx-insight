@@ -1,7 +1,9 @@
 from pathlib import Path
 import pandas as pd
 from src.utils.config_loader import load_config
+from src.utils.logger import get_logger
 
+logger = get_logger(__name__)
 config = load_config()
 
 SILVER_DIR = Path(config["paths"]["silver"])
@@ -16,7 +18,7 @@ def run_data_checks():
     silver_partitions = list(SILVER_DIR.glob("dt=*/normalized_transactions.parquet"))
 
     if not silver_partitions:
-        print("No silver partition files found.")
+        logger.warning("No silver partition files found.")
         return
 
     all_invalid_rows = []
@@ -35,19 +37,23 @@ def run_data_checks():
         invalid_df = df[invalid_mask].copy()
         valid_df = df[~invalid_mask].copy()
 
-        dt_value = valid_df["dt"].iloc[0] if not valid_df.empty else df["dt"].iloc[0]
+        dt_folder = partition_file.parent.name
+        dt_value = dt_folder.replace("dt=", "")
 
         gold_partition_dir = GOLD_DIR / f"dt={dt_value}"
         gold_partition_dir.mkdir(parents=True, exist_ok=True)
 
         valid_output_path = gold_partition_dir / "validated_transactions.parquet"
+
+        valid_df = valid_df.drop(columns=["dt"], errors="ignore")
         valid_df.to_parquet(valid_output_path, index=False)
 
-        print(f"Saved gold partition: {valid_output_path}")
-        print(f"Valid count for {dt_value}: {len(valid_df)}")
-        print(f"Invalid count for {dt_value}: {len(invalid_df)}")
+        logger.info("Saved gold partition: %s", valid_output_path)
+        logger.info("Valid count for %s: %s", dt_value, len(valid_df))
+        logger.info("Invalid count for %s: %s", dt_value, len(invalid_df))
 
         if not invalid_df.empty:
+            invalid_df["partition_dt"] = dt_value
             all_invalid_rows.append(invalid_df)
 
     if all_invalid_rows:
@@ -58,8 +64,8 @@ def run_data_checks():
     invalid_output_path = QUARANTINE_DIR / "invalid_transactions.csv"
     final_invalid_df.to_csv(invalid_output_path, index=False)
 
-    print(f"Invalid rows saved to {invalid_output_path}")
-    print(f"Total invalid count: {len(final_invalid_df)}")
+    logger.info("Invalid rows saved to %s", invalid_output_path)
+    logger.info("Total invalid count: %s", len(final_invalid_df))
 
 
 if __name__ == "__main__":
